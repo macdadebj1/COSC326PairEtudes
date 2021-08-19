@@ -1,20 +1,83 @@
-import java.Util.Scanner;
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Arrays;
 
 public class anagram{
 
-    private boolean debug = false;
+    private static boolean debug = false;
+    private static ArrayList<String> toSolve = new ArrayList<>();
+    private static HashMap<String,ArrayList<String>> dictionary = new HashMap<>();
 
     public static void main(String args[]){
         if(args.length > 0){
             if(args[0].charAt(0) == 'd' || args[0].charAt(0) =='D') debug = true;
+            if(debug) System.out.println("Debug enabled!");
         }
+        readData();
+        System.out.println("Dictionary:");
+        printDictionary();
+        System.out.println("\nWords to find anagrams of:");
+        printToSolveArray();
+
 
     }
 
     private static void readData(){
+        boolean readingDictionaryWords = false;
         Scanner scan = new Scanner(System.in);
-        while(Scan.hasNextLine()){
-            String line = Scan.nextLine();
+        while(scan.hasNextLine()){
+            String line = scan.nextLine();
+            if(debug) System.out.println(line);
+            if(debug) System.out.println("reading dictionary words? "+readingDictionaryWords);
+            if(line.equals("")) {
+                readingDictionaryWords = true;
+                continue;
+            }
+            if(!readingDictionaryWords){
+                toSolve.add(line);
+            }else if(readingDictionaryWords){
+                addToDictionary(line);
+            }
+
         }
+    }
+
+
+    /**
+     * This is sorting stored words as the key for the dictionary and words that sort to the same will be at the same index.
+     * Sorry for my bad explanation, see below diagram :)
+     * LOOP -> [LOOP, POOL, POLO]
+     * OPST -> [STOP, POST]
+     * */
+    private static void addToDictionary(String word){
+        //Strings cannot be easily sorted like this, so converting to a char array, sorting that and
+        //then creating a new string out of the sorted char array.
+        char[] cA = word.toCharArray();
+        Arrays.sort(cA);
+        String sortedWord = new String(cA);
+        printd(sortedWord);
+        if(!dictionary.containsKey(sortedWord)){
+            dictionary.put(sortedWord, new ArrayList<String>());
+        }
+        dictionary.get(sortedWord).add(word);
+    }
+
+    private static void printDictionary(){
+        dictionary.forEach((key,array) -> {
+            for(int i = 0; i < array.size();i++){
+                System.out.println(array.get(i));
+            }
+        });
+    }
+
+    private static void printToSolveArray(){
+        for(int i = 0; i < toSolve.size(); i++){
+            System.out.println(toSolve.get(i));
+        }
+    }
+
+    private static void printd(String s){
+        if(debug) System.out.println(s);
     }
 }
