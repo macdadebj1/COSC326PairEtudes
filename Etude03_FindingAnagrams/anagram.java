@@ -23,6 +23,17 @@ public class anagram{
 
     }
 
+    private static void doAnagrams(){
+        for(int i = 0; i < toSolve.size();i++){
+            String word = toSolve.get(i)
+            System.out.println(word+": "+findAnagram(word));
+        }
+    }
+
+    private static void findAnagram(String s){
+
+    }
+
     private static void readData(){
         boolean readingDictionaryWords = false;
         Scanner scan = new Scanner(System.in);
@@ -53,9 +64,9 @@ public class anagram{
     private static void addToDictionary(String word){
         //Strings cannot be easily sorted like this, so converting to a char array, sorting that and
         //then creating a new string out of the sorted char array.
-        char[] cA = word.toCharArray();
-        Arrays.sort(cA);
-        String sortedWord = new String(cA);
+
+
+        String sortedWord = sortString(word);
         printd(sortedWord);
         if(!dictionary.containsKey(sortedWord)){
             dictionary.put(sortedWord, new ArrayList<String>());
@@ -63,11 +74,19 @@ public class anagram{
         dictionary.get(sortedWord).add(word);
     }
 
+    private static String sortString(String s){
+        char[] cA = s.toCharArray();
+        Arrays.sort(cA);
+        return new String(cA);
+    }
+
     private static void printDictionary(){
         dictionary.forEach((key,array) -> {
+            System.out.print(key+": [");
             for(int i = 0; i < array.size();i++){
-                System.out.println(array.get(i));
+                System.out.print(array.get(i)+ " ");
             }
+            System.out.println("]");
         });
     }
 
