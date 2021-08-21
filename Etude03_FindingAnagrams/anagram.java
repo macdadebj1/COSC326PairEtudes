@@ -25,13 +25,13 @@ public class anagram{
 
     private static void doAnagrams(){
         for(int i = 0; i < toSolve.size();i++){
-            String word = toSolve.get(i)
+            String word = toSolve.get(i);
             System.out.println(word+": "+findAnagram(word));
         }
     }
 
-    private static void findAnagram(String s){
-
+    private static String findAnagram(String s){
+        return"";
     }
 
     private static void readData(){
