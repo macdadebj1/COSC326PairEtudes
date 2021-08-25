@@ -1,0 +1,5 @@
+use 3d vector as filter that has a similar shape to the features you want to keep.
+e.g.
+<0.1 0.8 0.1> will keep peaks
+<0.33 0.33 0.33> will keep flatter features
+<0.4 0.2 0.4> will keep troughs
