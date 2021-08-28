@@ -3,3 +3,9 @@ e.g.
 <0.1 0.8 0.1> will keep peaks
 <0.33 0.33 0.33> will keep flatter features
 <0.4 0.2 0.4> will keep troughs
+
+
+"Digital Bandpass Filter"
+https://www.analog.com/media/en/technical-documentation/dsp-book/dsp_book_Ch14.pdf
+https://www.statology.org/normalize-data-between-0-and-100/
+https://medium.com/swlh/noise-removal-for-a-better-fast-fourier-transformation-284918d4250f
