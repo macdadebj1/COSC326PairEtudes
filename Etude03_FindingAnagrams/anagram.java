@@ -8,6 +8,7 @@ public class anagram{
     private static boolean debug = false;
     private static ArrayList<String> toSolve = new ArrayList<>();
     private static HashMap<String,ArrayList<String>> dictionary = new HashMap<>();
+    private static HashMap<Character,Byte> uniqueCharStore = new HashMap<>();
 
     public static void main(String args[]){
         if(args.length > 0){
@@ -19,7 +20,7 @@ public class anagram{
         printDictionary();
         System.out.println("\nWords to find anagrams of:");
         printToSolveArray();
-
+        loadUniqueCharPairs();
 
     }
 
@@ -98,5 +99,12 @@ public class anagram{
 
     private static void printd(String s){
         if(debug) System.out.println(s);
+    }
+
+    private static void loadUniqueCharPairs(){
+        char c ='a';
+        for(int i = 0; i < 26; i++){
+            System.out.println(Character(c+i).toString());
+        }
     }
 }
