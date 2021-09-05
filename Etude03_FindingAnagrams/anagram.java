@@ -2,12 +2,13 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class anagram{
 
     private static boolean debug = false;
     private static ArrayList<String> toSolve = new ArrayList<>();
-    private static HashMap<Long,String> dictionary = new HashMap<>();
+    private static HashMap<String,ArrayList<String>> dictionary = new HashMap<>();
     private static HashMap<Character,Integer> uniqueCharStore = new HashMap<>();
 
     public static void main(String args[]){
@@ -20,7 +21,6 @@ public class anagram{
         printDictionary();
         System.out.println("\nWords to find anagrams of:");
         printToSolveArray();
-        loadUniqueCharPairs();
         doAnagrams();
 
     }
@@ -33,11 +33,15 @@ public class anagram{
     }
 
     private static String findAnagram(String s){
-
-        findUniqueNumber(s);
+        String sortedString = sortString(s);
+        ArrayList<String> list;
+        if(dictionary.containsKey(sortedString)){
+            list = dictionary.get(sortedString);
+            return list.get(0);
+        }
         return"";
     }
-
+/*
     private static long findUniqueNumber(String s){
         long result = 1;
         for(int i = 0; i < s.length();i++){
@@ -46,7 +50,7 @@ public class anagram{
         if(debug) System.out.println("Result: "+result);
         return result;
     }
-
+*/
     private static void readData(){
         boolean readingDictionaryWords = false;
         Scanner scan = new Scanner(System.in);
@@ -65,6 +69,7 @@ public class anagram{
             }
 
         }
+        dictionary.forEach((k,v)->Collections.sort(v));
     }
 
 
@@ -78,7 +83,13 @@ public class anagram{
         //Strings cannot be easily sorted like this, so converting to a char array, sorting that and
         //then creating a new string out of the sorted char array.
 
-        dictionary.put(findUniqueNumber(word),word);
+
+        String sortedWord = sortString(word);
+        printd(sortedWord);
+        if(!dictionary.containsKey(sortedWord)){
+            dictionary.put(sortedWord, new ArrayList<String>());
+        }
+        dictionary.get(sortedWord).add(word);
     }
 
     private static String sortString(String s){
@@ -88,8 +99,12 @@ public class anagram{
     }
 
     private static void printDictionary(){
-        dictionary.forEach((key,value) -> {
-            System.out.println(key+": "+value);
+        dictionary.forEach((key,array) -> {
+            System.out.print(key+": [");
+            for(int i = 0; i < array.size();i++){
+                System.out.print(array.get(i)+ " ");
+            }
+            System.out.println("]");
         });
     }
 
@@ -103,12 +118,12 @@ public class anagram{
         if(debug) System.out.println(s);
     }
 
-    /**
+    /*
      * I'm so sorry, this is the worst thing I have ever done...
      * I figured it would take me much less time to do it like this than importing my primes
      * code and debugging my code to do this computationally...
      *
-     * */
+     *
     private static void loadUniqueCharPairs(){
         uniqueCharStore.put(' ',1);
         uniqueCharStore.put('a',2);
@@ -137,5 +152,5 @@ public class anagram{
         uniqueCharStore.put('x',89);
         uniqueCharStore.put('y',97);
         uniqueCharStore.put('z',101);
-    }
+    }*/
 }
