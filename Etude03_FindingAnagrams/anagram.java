@@ -25,6 +25,9 @@ public class anagram{
 
     }
 
+    /**
+     * iterates through toSolve Array and prints the best anagram for each word.
+     * */
     private static void doAnagrams(){
         for(int i = 0; i < toSolve.size();i++){
             String word = toSolve.get(i);
@@ -32,25 +35,25 @@ public class anagram{
         }
     }
 
+    /**
+     * Method to find the best possible anagram of the given word from the dictionary.
+     * */
     private static String findAnagram(String s){
         String sortedString = sortString(s);
         ArrayList<String> list;
-        if(dictionary.containsKey(sortedString)){
+        if(dictionary.containsKey(sortedString)){ //If we have an entry in the dictionary that is already an anagram of the word.
             list = dictionary.get(sortedString);
             return list.get(0);
+        } else{
+
+
         }
         return"";
     }
-/*
-    private static long findUniqueNumber(String s){
-        long result = 1;
-        for(int i = 0; i < s.length();i++){
-            result*=uniqueCharStore.get(s.charAt(i));
-        }
-        if(debug) System.out.println("Result: "+result);
-        return result;
-    }
-*/
+
+    /**
+     * Reads data from stdin and saves it either to the toSolve array or the dictionary.
+     * */
     private static void readData(){
         boolean readingDictionaryWords = false;
         Scanner scan = new Scanner(System.in);
@@ -70,8 +73,9 @@ public class anagram{
 
         }
         dictionary.forEach((k,v)->Collections.sort(v));
+        //goes through each list in the dictionary and sorts it alphabetically, this means we only need to get the first
+        //element to get the 'best' anagram (as defined in the project sheet).
     }
-
 
     /**
      * This is sorting stored words as the key for the dictionary and words that sort to the same will be at the same index.
@@ -85,19 +89,25 @@ public class anagram{
 
 
         String sortedWord = sortString(word);
-        printd(sortedWord);
+        if(debug) System.out.println(sortedWord);
         if(!dictionary.containsKey(sortedWord)){
             dictionary.put(sortedWord, new ArrayList<String>());
         }
         dictionary.get(sortedWord).add(word);
     }
 
+    /**
+     * Sorts the chars in a string alphabetically.
+     * */
     private static String sortString(String s){
         char[] cA = s.toCharArray();
         Arrays.sort(cA);
         return new String(cA);
     }
 
+    /**
+     * Helper method to print the dictionary.
+     * */
     private static void printDictionary(){
         dictionary.forEach((key,array) -> {
             System.out.print(key+": [");
@@ -114,9 +124,16 @@ public class anagram{
         }
     }
 
-    private static void printd(String s){
-        if(debug) System.out.println(s);
+    /*
+    private static long findUniqueNumber(String s){
+        long result = 1;
+        for(int i = 0; i < s.length();i++){
+            result*=uniqueCharStore.get(s.charAt(i));
+        }
+        if(debug) System.out.println("Result: "+result);
+        return result;
     }
+*/
 
     /*
      * I'm so sorry, this is the worst thing I have ever done...
