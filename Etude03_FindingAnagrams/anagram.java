@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 public class anagram{
 
@@ -41,14 +42,44 @@ public class anagram{
     private static String findAnagram(String s){
         String sortedString = sortString(s);
         ArrayList<String> list;
+        int longestPartialAnagram = 0;
         if(dictionary.containsKey(sortedString)){ //If we have an entry in the dictionary that is already an anagram of the word.
+            if(debug) System.out.println("This is already a perfect anagram!");
             list = dictionary.get(sortedString);
             return list.get(0);
         } else{
+            if(debug) System.out.println("We didn't find a perfect anagram!");
+            int charsRemaining = sortedString.length();
+            HashMap<Character,Integer> StringMap = convertStringToHashMap(sortedString);
+            if(debug) printHashMap(StringMap);
+            for(String str : dictionary.keySet()){
+                if(debug) System.out.println("Trying "+str);
+                if(isPartialAnagram(StringMap,str)){
+                    if(debug) System.out.println("This is a partial anagram!");
+                    if(str.length() > longestPartialAnagram){
+                        longestPartialAnagram = str; //If we cannot find an anagram with this longest, it will break...
+                        //I think should use an arrayList of arrayLists to show the different combinations..?
+                    }
+                }else{
+                    if(debug) System.out.println("This is not a partial anagram! :(");
+                }
+            }
 
 
         }
         return"";
+    }
+
+    private static HashMap<Character,Integer> convertStringToHashMap(String s){
+        HashMap<Character,Integer> map = new HashMap<>();
+        for(char ch : s.toCharArray()){
+            if(map.containsKey(ch)){
+                map.put(ch,map.get(ch)+1);
+            }else{
+                map.put(ch,1);
+            }
+        }
+        return map;
     }
 
     /**
@@ -75,6 +106,12 @@ public class anagram{
         dictionary.forEach((k,v)->Collections.sort(v));
         //goes through each list in the dictionary and sorts it alphabetically, this means we only need to get the first
         //element to get the 'best' anagram (as defined in the project sheet).
+    }
+
+    private static void printHashMap(HashMap<Character,Integer> map){
+        for (Map.Entry entry : map.entrySet()) {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        }
     }
 
     /**
@@ -105,6 +142,35 @@ public class anagram{
         return new String(cA);
     }
 
+    private static boolean isAnagram(String x, String y){
+        return sortString(x).equals(sortString(y));
+    }
+
+    /**
+     * @param charMap the word that we are trying to find anagrams of, converted to a hashmap of chars, with their frequencies.
+     * @param wordToCheck the word to check.
+     * */
+    private static boolean isPartialAnagram(HashMap<Character,Integer> charMap, String wordToCheck){
+        if(debug) System.out.println("In isPartialAnagram");
+        for(char ch: wordToCheck.toCharArray()){
+            Integer numChars = charMap.get(ch);
+            if(numChars == null){
+                if(debug) System.out.println("Couldn't find a reference to "+ch+" in isPartialAnagram");
+                return false;
+            }
+            else if(numChars == 0){
+                if(debug) System.out.println("Found a reference to "+ch+" but there are 0 more available!");
+                return false;
+            }
+            else{
+                if(debug) System.out.println("Found a reference to "+ch+" and we subtracted one from number available");
+                charMap.put(ch,charMap.get(ch)-1);
+            }
+        }
+        return true;
+
+    }
+
     /**
      * Helper method to print the dictionary.
      * */
@@ -124,50 +190,4 @@ public class anagram{
         }
     }
 
-    /*
-    private static long findUniqueNumber(String s){
-        long result = 1;
-        for(int i = 0; i < s.length();i++){
-            result*=uniqueCharStore.get(s.charAt(i));
-        }
-        if(debug) System.out.println("Result: "+result);
-        return result;
-    }
-*/
-
-    /*
-     * I'm so sorry, this is the worst thing I have ever done...
-     * I figured it would take me much less time to do it like this than importing my primes
-     * code and debugging my code to do this computationally...
-     *
-     *
-    private static void loadUniqueCharPairs(){
-        uniqueCharStore.put(' ',1);
-        uniqueCharStore.put('a',2);
-        uniqueCharStore.put('b',3);
-        uniqueCharStore.put('c',5);
-        uniqueCharStore.put('d',7);
-        uniqueCharStore.put('e',11);
-        uniqueCharStore.put('f',13);
-        uniqueCharStore.put('g',17);
-        uniqueCharStore.put('h',19);
-        uniqueCharStore.put('i',23);
-        uniqueCharStore.put('j',29);
-        uniqueCharStore.put('k',31);
-        uniqueCharStore.put('l',37);
-        uniqueCharStore.put('m',41);
-        uniqueCharStore.put('n',43);
-        uniqueCharStore.put('o',47);
-        uniqueCharStore.put('p',53);
-        uniqueCharStore.put('q',59);
-        uniqueCharStore.put('r',61);
-        uniqueCharStore.put('s',67);
-        uniqueCharStore.put('t',71);
-        uniqueCharStore.put('u',73);
-        uniqueCharStore.put('v',79);
-        uniqueCharStore.put('w',83);
-        uniqueCharStore.put('x',89);
-        uniqueCharStore.put('y',97);
-        uniqueCharStore.put('z',101);
-    }*/
 }
