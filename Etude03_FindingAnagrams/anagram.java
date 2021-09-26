@@ -22,6 +22,7 @@ public class anagram{
         printDictionary();
         System.out.println("\nWords to find anagrams of:");
         printToSolveArray();
+        System.out.println("======================================");
         doAnagrams();
 
     }
@@ -30,9 +31,11 @@ public class anagram{
      * iterates through toSolve Array and prints the best anagram for each word.
      * */
     private static void doAnagrams(){
+        if(debug) System.out.println("In do anagrams");
         for(int i = 0; i < toSolve.size();i++){
             String word = toSolve.get(i);
             System.out.println(word+": "+findAnagram(word));
+            if(debug) System.out.println("==============================");
         }
     }
 
@@ -41,33 +44,63 @@ public class anagram{
      * */
     private static String findAnagram(String s){
         String sortedString = sortString(s);
-        ArrayList<String> list;
+        sortedString.replaceAll(" ","");
+        if(debug) System.out.println("Trying to find an anagram for the String: "+s);
+        ArrayList<String> list; //list of partial or full anagrams...
         int longestPartialAnagram = 0;
+        String anagram = "";
         if(dictionary.containsKey(sortedString)){ //If we have an entry in the dictionary that is already an anagram of the word.
             if(debug) System.out.println("This is already a perfect anagram!");
             list = dictionary.get(sortedString);
             return list.get(0);
         } else{
             if(debug) System.out.println("We didn't find a perfect anagram!");
+            list = new ArrayList<>();
             int charsRemaining = sortedString.length();
-            HashMap<Character,Integer> StringMap = convertStringToHashMap(sortedString);
-            if(debug) printHashMap(StringMap);
             for(String str : dictionary.keySet()){
-                if(debug) System.out.println("Trying "+str);
-                if(isPartialAnagram(StringMap,str)){
-                    if(debug) System.out.println("This is a partial anagram!");
-                    if(str.length() > longestPartialAnagram){
-                        longestPartialAnagram = str; //If we cannot find an anagram with this longest, it will break...
-                        //I think should use an arrayList of arrayLists to show the different combinations..?
+                if(isPartialAnagram(sortedString,str)) list.add(dictionary.get(str).get(0));
+            }
+            Collections.sort(list, (string1, string2) -> Integer.compare(string2.length(),string1.length()));
+            if(debug) System.out.println("~~~LIST OF PARTIAL ANAGRAMS:~~~");
+            if(debug) list.forEach((str)->System.out.println(str));
+            if(debug) System.out.println("~~~End List~~~");
+            HashMap<Character,Integer> StringMap;
+            String anagramToReturn = "";
+            for(int i = 0; i < list.size();i++){
+                anagramToReturn = "";
+                StringMap = convertStringToHashMap(sortedString);
+                if(debug) printHashMap(StringMap);
+                //FIND BEST COMBINATION OF PARTIAL ANAGRAMS!
+                for(int j = i; j <list.size();j++){
+                   /* String tempAnagram = anagramToReturn;
+                    if(debug) System.out.println("Trying: "+list.get(j)+" our current anagram is: "+tempAnagram);
+                    if(tempAnagram.length()-countCharOccurencesInString(tempAnagram,' ') ==sortedString.length()){
+                        if(debug) System.out.println("Found a multiWord Anagram: "+tempAnagram);
+                        return tempAnagram;
+                    }else if(tempAnagram.length()-countCharOccurencesInString(tempAnagram,' ') >sortedString.length()){
+                        if(debug) System.out.println("A potential anagram was longer than the inputted String! :( trying again!");
+                        break;
+                    }else{
+                        if(debug) System.out.println("We found a bad multiword anagram: "+ tempAnagram);
                     }
-                }else{
-                    if(debug) System.out.println("This is not a partial anagram! :(");
+                    if(checkWordAgainstAnagram(StringMap,list.get(j))){
+                        tempAnagram+=list.get(j)+" ";
+
+                    }else break;*/
                 }
             }
-
-
         }
-        return"";
+        return anagram;
+    }
+
+    private static int countCharOccurencesInString(String s, char c){
+        int numberOfOccurences = 0;
+        for(char ch : s.toCharArray()){
+            if(ch == c){
+                numberOfOccurences++;
+            }
+        }
+        return numberOfOccurences;
     }
 
     private static HashMap<Character,Integer> convertStringToHashMap(String s){
@@ -109,9 +142,10 @@ public class anagram{
     }
 
     private static void printHashMap(HashMap<Character,Integer> map){
-        for (Map.Entry entry : map.entrySet()) {
+        map.forEach((key, value)->System.out.println(key + ": " + value));
+        /*for (Map.Entry entry : map.entrySet()) {
             System.out.println(entry.getKey() + " " + entry.getValue());
-        }
+        }*/
     }
 
     /**
@@ -143,6 +177,7 @@ public class anagram{
     }
 
     private static boolean isAnagram(String x, String y){
+        if(debug) System.out.println("Str1: "+x+". Str2: "+y);
         return sortString(x).equals(sortString(y));
     }
 
@@ -150,7 +185,8 @@ public class anagram{
      * @param charMap the word that we are trying to find anagrams of, converted to a hashmap of chars, with their frequencies.
      * @param wordToCheck the word to check.
      * */
-    private static boolean isPartialAnagram(HashMap<Character,Integer> charMap, String wordToCheck){
+    private static boolean isPartialAnagram(String mainWord, String wordToCheck){
+        HashMap<Character,Integer> charMap = convertStringToHashMap(mainWord);
         if(debug) System.out.println("In isPartialAnagram");
         for(char ch: wordToCheck.toCharArray()){
             Integer numChars = charMap.get(ch);
@@ -168,7 +204,35 @@ public class anagram{
             }
         }
         return true;
+    }
 
+    private static boolean checkWordAgainstAnagram(HashMap<Character,Integer> charMap, String wordToCheck){
+        HashMap<Character,Integer> tempHM = deepCopyHashMap(charMap);
+        if(debug) System.out.println("In checkWordAgainstAnagram");
+        for(char ch: wordToCheck.toCharArray()){
+            Integer numChars = tempHM.get(ch);
+            if(numChars == null){
+                if(debug) System.out.println("Couldn't find a reference to "+ch+" in checkWordAgainstAnagram");
+                return false;
+            }
+            else if(numChars == 0){
+                if(debug) System.out.println("Found a reference to "+ch+" but there are 0 more available!");
+                return false;
+            }
+            else{
+                if(debug) System.out.println("Found a reference to "+ch+" and we subtracted one from number available");
+                tempHM.put(ch,tempHM.get(ch)-1);
+            }
+        }
+        charMap = deepCopyHashMap(tempHM);
+        if(debug) System.out.println("Copying tempHashMap back into mainHashMap!");
+        return true;
+    }
+
+    private static HashMap<Character,Integer> deepCopyHashMap(HashMap<Character,Integer> hm){
+        HashMap<Character,Integer> tempHM = new HashMap<>();
+        hm.forEach((key,value)-> tempHM.put(new Character(key),new Integer(value)));
+        return tempHM;
     }
 
     /**
@@ -190,4 +254,14 @@ public class anagram{
         }
     }
 
+
+    /*public class StrLenghtComparitor implements Comparitor<String>{
+        @Override
+        public int compare(String s1, String s2){
+            if(s1.lenght() != s2.length()){
+                return s1.length() - s2.length();
+            }
+            return s1.compareTo(s2);
+        }
+    }*/
 }
