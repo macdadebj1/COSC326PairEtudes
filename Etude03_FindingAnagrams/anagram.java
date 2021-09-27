@@ -176,6 +176,12 @@ public class anagram{
         return new String(cA);
     }
 
+
+    private static ArrayList<String> findPartialAnagrams(String toSolveFor, ArrayList<String> dict){
+        
+    }
+
+
     private static boolean isAnagram(String x, String y){
         if(debug) System.out.println("Str1: "+x+". Str2: "+y);
         return sortString(x).equals(sortString(y));
