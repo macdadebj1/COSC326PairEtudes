@@ -18,11 +18,11 @@ public class anagram{
             if(debug) System.out.println("Debug enabled!");
         }
         readData();
-        System.out.println("Dictionary:");
-        printDictionary();
-        System.out.println("\nWords to find anagrams of:");
-        printToSolveArray();
-        System.out.println("======================================");
+        if(debug) System.out.println("Dictionary:");
+        if(debug) printDictionary();
+        if(debug) System.out.println("\nWords to find anagrams of:");
+        if(debug) printToSolveArray();
+        if(debug) System.out.println("======================================");
         doAnagrams();
 
     }
