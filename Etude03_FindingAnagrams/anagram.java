@@ -64,33 +64,72 @@ public class anagram{
             if(debug) System.out.println("~~~LIST OF PARTIAL ANAGRAMS:~~~");
             if(debug) list.forEach((str)->System.out.println(str));
             if(debug) System.out.println("~~~End List~~~");
-            HashMap<Character,Integer> StringMap;
-            String anagramToReturn = "";
-            for(int i = 0; i < list.size();i++){
-                anagramToReturn = "";
-                StringMap = convertStringToHashMap(sortedString);
-                if(debug) printHashMap(StringMap);
-                //FIND BEST COMBINATION OF PARTIAL ANAGRAMS!
-                for(int j = i; j <list.size();j++){
-                   /* String tempAnagram = anagramToReturn;
-                    if(debug) System.out.println("Trying: "+list.get(j)+" our current anagram is: "+tempAnagram);
-                    if(tempAnagram.length()-countCharOccurencesInString(tempAnagram,' ') ==sortedString.length()){
-                        if(debug) System.out.println("Found a multiWord Anagram: "+tempAnagram);
-                        return tempAnagram;
-                    }else if(tempAnagram.length()-countCharOccurencesInString(tempAnagram,' ') >sortedString.length()){
-                        if(debug) System.out.println("A potential anagram was longer than the inputted String! :( trying again!");
-                        break;
-                    }else{
-                        if(debug) System.out.println("We found a bad multiword anagram: "+ tempAnagram);
-                    }
-                    if(checkWordAgainstAnagram(StringMap,list.get(j))){
-                        tempAnagram+=list.get(j)+" ";
-
-                    }else break;*/
-                }
+            ArrayList<String> gram = longest(s, list, new ArrayList<String>());
+            for(int i = 0; i < gram.size(); i++){
+                anagram+= gram.get(i)+" ";
             }
+            
         }
         return anagram;
+    }
+
+    private static ArrayList<String> longest(String remaining, ArrayList<String> OLDpartials, ArrayList<String> solution){ // apple {} //p {leap}  // le {app}
+        
+        ArrayList<String> newPartials = findPartialAnagrams(remaining, OLDpartials); // leap, app, pel, el //
+        if(debug) System.out.println("remaining: " + remaining);
+        if (debug){
+            System.out.print("newPartials: ");
+            for (String a : newPartials){
+                System.out.print(a + " ");
+            }
+            System.out.println();
+
+            System.out.print("solution: ");
+                        for (String a : solution){
+                            System.out.print(a + " ");
+                        }
+                        System.out.println();
+        }
+        for(String p : newPartials){ //leap //app //el
+            if (debug) System.out.println("ADDING: " + p);
+            solution.add(p); // {leap} // {app} // {app} {el}
+             if(p.length() == remaining.length()){
+                if (debug) System.out.println("FOUND SOLUTION");
+                return solution; // {app} {el}
+             }else{
+                String newRemaining = findRemaining(remaining, p);
+                if(debug) System.out.println("new remaining: " + newRemaining);
+                ArrayList<String> newNewPartials = new ArrayList<String>(newPartials);
+                newNewPartials.remove(p);
+                ArrayList<String> copy = new ArrayList<String>(solution);
+                solution = longest(newRemaining, newNewPartials, solution); // p {leap} // le {app}
+                if (solution.size() == copy.size()){ 
+                    if (debug) System.out.println("solution size: " + solution.size() + "  copy size: " + copy.size());
+                    if (debug) {
+                        
+                        System.out.print("solution: ");
+                        for (String a : solution){
+                            System.out.print(a + " ");
+                        }
+                        System.out.println();
+                        System.out.println("REMOVING: " + solution.get(solution.size()-1));
+                    }
+                    solution.remove(solution.size()-1); //{}
+                } else {
+                    if (debug) System.out.println("RETURNING SOLUTION");
+                    return solution; //{app} {el} //{app} {el}
+                }
+             }
+        }
+        return solution; // {leap}
+    }
+
+    private static String findRemaining(String s1, String s2){
+        StringBuilder builder = new StringBuilder(s1);
+        for (char ch : s2.toCharArray()){
+            builder.deleteCharAt(builder.indexOf(Character.toString(ch)));
+        }
+        return builder.toString();
     }
 
     private static int countCharOccurencesInString(String s, char c){
@@ -105,6 +144,10 @@ public class anagram{
 
     private static HashMap<Character,Integer> convertStringToHashMap(String s){
         HashMap<Character,Integer> map = new HashMap<>();
+        if (s.length() < 0){
+            if(debug) System.out.println("No, problem here");
+            System.exit(0);
+        }
         for(char ch : s.toCharArray()){
             if(map.containsKey(ch)){
                 map.put(ch,map.get(ch)+1);
@@ -112,6 +155,7 @@ public class anagram{
                 map.put(ch,1);
             }
         }
+        
         return map;
     }
 
@@ -178,7 +222,15 @@ public class anagram{
 
 
     private static ArrayList<String> findPartialAnagrams(String toSolveFor, ArrayList<String> dict){
-        
+        if(debug) System.out.println("In findPartialAnagram, solving for : "+toSolveFor);
+        ArrayList<String> partials = new ArrayList<>();
+        for(int i = 0; i < dict.size();i++){
+            if(isPartialAnagram(toSolveFor, dict.get(i))){
+                if(debug) System.out.println("Found a partial anagram! "+dict.get(i));
+                partials.add(dict.get(i));
+            }
+        }
+        return partials;
     }
 
 
@@ -205,7 +257,7 @@ public class anagram{
                 return false;
             }
             else{
-                if(debug) System.out.println("Found a reference to "+ch+" and we subtracted one from number available");
+                //if(debug) System.out.println("Found a reference to "+ch+" and we subtracted one from number available");
                 charMap.put(ch,charMap.get(ch)-1);
             }
         }
