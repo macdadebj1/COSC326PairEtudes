@@ -100,7 +100,7 @@ public class anagram{
                 String newRemaining = findRemaining(remaining, p);
                 if(debug) System.out.println("new remaining: " + newRemaining);
                 ArrayList<String> newNewPartials = new ArrayList<String>(newPartials);
-                newNewPartials.remove(p);
+                //newNewPartials.remove(p);
                 ArrayList<String> copy = new ArrayList<String>(solution);
                 solution = longest(newRemaining, newNewPartials, solution); // p {leap} // le {app}
                 if (solution.size() == copy.size()){ 
@@ -119,6 +119,7 @@ public class anagram{
                     if (debug) System.out.println("RETURNING SOLUTION");
                     return solution; //{app} {el} //{app} {el}
                 }
+                newNewPartials.add(p);
              }
         }
         return solution; // {leap}
