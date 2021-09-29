@@ -60,7 +60,14 @@ public class anagram{
             for(String str : dictionary.keySet()){
                 if(isPartialAnagram(sortedString,str)) list.add(dictionary.get(str).get(0));
             }
-            Collections.sort(list, (string1, string2) -> Integer.compare(string2.length(),string1.length()));
+            Collections.sort(list, (string1, string2) -> {
+                int result = Integer.compare(string2.length(),string1.length());
+                if(result == 0){
+                    return string1.compareTo(string2);
+                }
+                return result;
+
+            });
             if(debug) System.out.println("~~~LIST OF PARTIAL ANAGRAMS:~~~");
             if(debug) list.forEach((str)->System.out.println(str));
             if(debug) System.out.println("~~~End List~~~");
