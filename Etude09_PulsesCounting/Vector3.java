@@ -23,7 +23,7 @@ public class Vector3{
 	}*/
 	
 	public String toString(){
-		return String.format("<%f,%f,%f>",x,y,z);
+		return String.format("<%f,%f,%f>",this.x,this.y,this.z);
 	}
 	
 }

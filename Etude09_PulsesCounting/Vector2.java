@@ -22,7 +22,7 @@ public class Vector2{
 	}*/
 	
 	public String toString(){
-		return String.format("<%f,%f,%f>",x,y,z);
+		return String.format("<%f,%f>",this.x,this.y);
 	}
 	
 }
