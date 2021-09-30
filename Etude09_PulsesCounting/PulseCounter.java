@@ -11,8 +11,22 @@ public class PulseCounter{
 
     }
 
-    public static ArrayList<Integer> movingAverageFilterPass(ArrayList<Integer> dataArray)){
+    public static ArrayList<Integer> movingAverageFilterPass(ArrayList<Integer> dataArray){
+        ArrayList<Integer> outArray = new ArrayList<>();
+        for(int i = 0; i < dataArray.size()-1;i++){
+            if(i == 0){
+                outArray.add(i,(dataArray.get(i) + dataArray.get(i+1))/2);
+            }else if(i == dataArray.size()-2){
+                outArray.add(i,(dataArray.get(i) + dataArray.get(i-1))/2);
+            }else{
+                outArray.add(i,sum(outArray.get(i-1),outArray.get(i),outArray.get(i+1)));
+            }
+        }
+        return outArray;
+    }
 
+    private static Integer sum(Integer i1, Integer i2, Integer i3){
+        return (i1 + i2 + i3)/3;
     }
 
     private static void readData(){
