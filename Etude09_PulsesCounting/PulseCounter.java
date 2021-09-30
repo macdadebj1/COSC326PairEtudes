@@ -6,7 +6,7 @@ import java.util.Vector;
 
 public class PulseCounter{
 
-    private static ArrayList<Integer> initialData = new ArrayList<>();
+    private static ArrayList<Float> initialData = new ArrayList<>();
     private static boolean debug = false;
 
     public static void main(String[] args){
@@ -17,35 +17,58 @@ public class PulseCounter{
         }
         readData();
         System.out.println("Number of Peaks in initialData: "+countNumberOfPeaks(initialData));
-        ArrayList<Integer> filteredData = new ArrayList<>();
-        for(int i = 0; i < 10; i++){
+        ArrayList<Float> filteredData = new ArrayList<>();
+        
+        for(int i = 0; i < 3; i++){
             if(i == 0) filteredData = movingAverageFilterPass(initialData);
             else filteredData = movingAverageFilterPass(filteredData);
         }
-        
+        /*
+        for(int i = 0; i < 10; i++){
+            if(i == 0) filteredData = vectorFilteringPass(initialData);
+            else filteredData = vectorFilteringPass(filteredData);
+            
+        }*/
         System.out.println("Number of peaks after filtering: "+countNumberOfPeaks(filteredData));
-        filteredData.forEach((data)->System.out.println(data));
+        //filteredData.forEach((data)->System.out.println(data));
         //initialData.forEach((data)->System.out.println(data));
 
 
     }
 
-    public static ArrayList<Integer> vectorFilteringPass(ArrayList<Integer> dataArray){
+    /*
+     * Unused vector filter built to preserve peaks.
+     */
+    public static ArrayList<Float> vectorFilteringPass(ArrayList<Float> dataArray){
         if(debug) System.out.println("in vector filter");
-        ArrayList<Integer> outArray = new ArrayList<>();
+        ArrayList<Float> outArray = new ArrayList<>();
         for(int i = 0; i < dataArray.size();i++){
             if(debug) System.out.println("i: "+ i+" size of array: "+dataArray.size());
             if(i == 0){
-                Vector<Integer>  dataVec = new Vector2(dataArray.get(i), dataArray.get(i+1));
-                Vector<Float> smoothingVector = new Vector<>(0.8,0.1);
+                Vector2 dataVector = new Vector2(dataArray.get(0), dataArray.get(1));
+                Vector2 smoothingVector = new Vector2(0.8f, 0.1f);
+                outArray.add(dataVector.dot(smoothingVector));
+
+            } else if (i == dataArray.size()-1){
+                Vector2 dataVector = new Vector2(dataArray.get(i-1), dataArray.get(i));
+                Vector2 smoothingVector = new Vector2(0.1f, 0.8f);
+                outArray.add(dataVector.dot(smoothingVector));
+
+            } else {
+                Vector3 dataVector = new Vector3(dataArray.get(i-1), dataArray.get(i), dataArray.get(i+1));
+                Vector3 smoothingVector = new Vector3(0.1f, 0.8f, 0.1f);
+                outArray.add(dataVector.dot(smoothingVector));
+
             }
+            
         }
+        return outArray;
     }
 
 
-    public static ArrayList<Integer> movingAverageFilterPass(ArrayList<Integer> dataArray){
+    public static ArrayList<Float> movingAverageFilterPass(ArrayList<Float> dataArray){
         if(debug) System.out.println("In filter!");
-        ArrayList<Integer> outArray = new ArrayList<>();
+        ArrayList<Float> outArray = new ArrayList<>();
         for(int i = 0; i < dataArray.size();i++){
             if(debug) System.out.println("i: "+ i+" size of array: "+dataArray.size());
             if(i == 0){
@@ -62,12 +85,13 @@ public class PulseCounter{
         return outArray;
     }
 
-    private static int countNumberOfPeaks(ArrayList<Integer> data){
+    private static int countNumberOfPeaks(ArrayList<Float> data){
         int average = calculateAverage(data);
         System.out.println("Average: "+average);
         int offset = 0;
         int peaks = 0;
         for(int i = 0; i < data.size();i++){
+            if (data.get(i) > average + offset){
             if(i == 0){
                 if(data.get(i) > data.get(i+1)){
                     peaks++;
@@ -82,13 +106,14 @@ public class PulseCounter{
                     peaks++;
                 }
             }
+            }
             //if(data.get(i) >= average+offset) peaks++;
         }
         return peaks;
 
     }
 
-    private static int calculateAverage(ArrayList<Integer> data){
+    private static int calculateAverage(ArrayList<Float> data){
         int sum = 0;
         int number = 0;
         for(int i = 0; i < data.size();i++){
@@ -98,7 +123,7 @@ public class PulseCounter{
         return sum/number;
     }
 
-    private static Integer sum(Integer i1, Integer i2, Integer i3){
+    private static Float sum(Float i1, Float i2, Float i3){
         return (i1 + i2 + i3)/3;
     }
 
@@ -107,7 +132,7 @@ public class PulseCounter{
         while (sc.hasNextLine()){
             String line = sc.nextLine();
             try {
-                initialData.add(Integer.parseInt(line));
+                initialData.add(Float.parseFloat(line));
             } catch (NumberFormatException e){
                 System.out.println("Bad Input: Data file should only include numbers");
                 System.exit(0);

@@ -1,19 +1,19 @@
 public class Vector2{
 
-	long x,y;
+	Float x,y;
 
-	public Vector2(int x, int y){
+	public Vector2(Float x, Float y){
 		this.x = x;
 		this.y = y;
 	}
 
 	public Vector2(){
-		this.x = 0;
-		this.y = 0;
+		this.x = 0.0f;
+		this.y = 0.0f;
 
 	}
 	
-	public long dot(Vector2 v){
+	public Float dot(Vector2 v){
 		return (this.x * v.x) + (this.y * v.y);
 	}
 	
