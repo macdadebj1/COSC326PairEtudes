@@ -26,14 +26,24 @@ public class PulseCounter{
     }
 
     private static int countNumberOfPeaks(ArrayList<Integer> data){
-
+        int average = calculateAverage(data);
+        int offset = 0;
+        int peaks = 0;
         for(int i = 0; i < data.size();i++){
-
+            if(data.get(i) >= average+offset) peaks++;
         }
+        return peaks;
+
     }
 
     private static int calculateAverage(ArrayList<Integer> data){
-        
+        int sum = 0;
+        int number = 0;
+        for(int i = 0; i < data.size();i++){
+            sum += data.get(i);
+            number++;
+        }
+        return sum/number;
     }
 
     private static Integer sum(Integer i1, Integer i2, Integer i3){
