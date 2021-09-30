@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+//https://www.gaussianwaves.com/2010/11/moving-average-filter-ma-filter-2/
+
 public class PulseCounter{
 
     ArrayList<Integer> initialData = new ArrayList<>();
@@ -9,7 +11,7 @@ public class PulseCounter{
 
     }
 
-    public static void vectorFilter(){
+    public static ArrayList<Integer> movingAverageFilterPass(ArrayList<Integer> dataArray)){
 
     }
 
