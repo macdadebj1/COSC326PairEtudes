@@ -18,11 +18,11 @@ public class anagram{
             if(debug) System.out.println("Debug enabled!");
         }
         readData();
-        System.out.println("Dictionary:");
-        printDictionary();
-        System.out.println("\nWords to find anagrams of:");
-        printToSolveArray();
-        System.out.println("======================================");
+        if(debug) System.out.println("Dictionary:");
+        if(debug) printDictionary();
+        if(debug) System.out.println("\nWords to find anagrams of:");
+        if(debug) printToSolveArray();
+        if(debug) System.out.println("======================================");
         doAnagrams();
 
     }
@@ -60,7 +60,14 @@ public class anagram{
             for(String str : dictionary.keySet()){
                 if(isPartialAnagram(sortedString,str)) list.add(dictionary.get(str).get(0));
             }
-            Collections.sort(list, (string1, string2) -> Integer.compare(string2.length(),string1.length()));
+            Collections.sort(list, (string1, string2) -> {
+                int result = Integer.compare(string2.length(),string1.length());
+                if(result == 0){
+                    return string1.compareTo(string2);
+                }
+                return result;
+
+            });
             if(debug) System.out.println("~~~LIST OF PARTIAL ANAGRAMS:~~~");
             if(debug) list.forEach((str)->System.out.println(str));
             if(debug) System.out.println("~~~End List~~~");
@@ -100,7 +107,7 @@ public class anagram{
                 String newRemaining = findRemaining(remaining, p);
                 if(debug) System.out.println("new remaining: " + newRemaining);
                 ArrayList<String> newNewPartials = new ArrayList<String>(newPartials);
-                newNewPartials.remove(p);
+                //newNewPartials.remove(p);
                 ArrayList<String> copy = new ArrayList<String>(solution);
                 solution = longest(newRemaining, newNewPartials, solution); // p {leap} // le {app}
                 if (solution.size() == copy.size()){ 
@@ -119,6 +126,7 @@ public class anagram{
                     if (debug) System.out.println("RETURNING SOLUTION");
                     return solution; //{app} {el} //{app} {el}
                 }
+                newNewPartials.add(p);
              }
         }
         return solution; // {leap}
