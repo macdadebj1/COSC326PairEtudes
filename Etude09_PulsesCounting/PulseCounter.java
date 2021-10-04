@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Vector;
+import uk.me.berndporr.iirj.*;
 
 //https://www.gaussianwaves.com/2010/11/moving-average-filter-ma-filter-2/
 
@@ -36,8 +37,8 @@ public class PulseCounter{
 
     }
 
-    /*
-     * Unused vector filter built to preserve peaks.
+    /**
+     * Vector based filter, currently unused, but has a max window size of 3.
      */
     public static ArrayList<Float> vectorFilteringPass(ArrayList<Float> dataArray){
         if(debug) System.out.println("in vector filter");
@@ -65,7 +66,9 @@ public class PulseCounter{
         return outArray;
     }
 
-
+    /**
+     * Moving average filter implementation, uses a window size of 3.
+     * */
     public static ArrayList<Float> movingAverageFilterPass(ArrayList<Float> dataArray){
         if(debug) System.out.println("In filter!");
         ArrayList<Float> outArray = new ArrayList<>();
@@ -83,6 +86,19 @@ public class PulseCounter{
             }
         }
         return outArray;
+    }
+
+    private static ArrayList<Float> bandPassFilter(ArrayList<Float> data){
+        ArrayList<Float> filteredData = new ArrayList<>();
+        int order = 6;
+        double sampleRate = 10;
+        double frequencyCutoff = 10;
+        Butterworth butterworth = new Butterworth();
+        butterworth.bandPass(order, sampleRate, frequencyCutoff, frequencyCutoff/4);
+        for(int i = 0; i < data.size(); i++){
+            filteredData.put(i,butterworth.filter(data.get(i)));
+        }
+        return filteredData;
     }
 
     private static int countNumberOfPeaks(ArrayList<Float> data){
