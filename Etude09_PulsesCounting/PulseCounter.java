@@ -25,6 +25,10 @@ public class PulseCounter{
             else filteredData = movingAverageFilterPass(filteredData);
         }
         filteredData = bandPassFilter(filteredData);
+
+        for(int i = 0; i < 5; i++){
+            filteredData = movingAverageFilterPass(filteredData);
+        }
 /*
         for(int i = 0; i < 10; i++){
             if(i == 0) filteredData = vectorFilteringPass(initialData);
@@ -99,7 +103,7 @@ public class PulseCounter{
         double sampleRate = 10;
         double nyq = sampleRate/2;
         double lowCut = 1.2;
-        double highCut = 2.25;
+        double highCut = 2.5;
         Butterworth butterworth = new Butterworth(inData,sampleRate);
         double[] filteredData = butterworth.bandPassFilter(order, lowCut,highCut);
         for(int i = 0; i < data.size(); i++){
@@ -113,9 +117,11 @@ public class PulseCounter{
         System.out.println("Average: "+average);
         int offset = 0;
         int peaks = 0;
+        data.set(0,data.get(1));
         for(int i = 0; i < data.size();i++){
             if (data.get(i) > average + offset){
             if(i == 0){
+
                 if(data.get(i) > data.get(i+1)){
                     peaks++;
                 }
@@ -135,6 +141,7 @@ public class PulseCounter{
         return peaks;
 
     }
+
     private static int countNumberOfPeaksDouble(ArrayList<Double> data){
         int average = calculateAverageDouble(data);
         System.out.println("Average: "+average);
@@ -144,11 +151,11 @@ public class PulseCounter{
             if (data.get(i) > average + offset){
             if(i == 0){
                 if(data.get(i) > data.get(i+1)){
-                    peaks++;
+                    //peaks++;
                 }
             }else if (i == data.size()-1){
                 if(data.get(i) > data.get(i-1)){
-                    peaks++;
+                    //peaks++;
                 }
             }
             else{
