@@ -1,13 +1,13 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Vector;
-import uk.me.berndporr.iirj.*;
+import com.github.psambit9791.jdsp.filter.Butterworth;
 
 //https://www.gaussianwaves.com/2010/11/moving-average-filter-ma-filter-2/
 
 public class PulseCounter{
 
-    private static ArrayList<Float> initialData = new ArrayList<>();
+    private static ArrayList<Double> initialData = new ArrayList<>();
     private static boolean debug = false;
 
     public static void main(String[] args){
@@ -17,21 +17,22 @@ public class PulseCounter{
             }
         }
         readData();
-        System.out.println("Number of Peaks in initialData: "+countNumberOfPeaks(initialData));
-        ArrayList<Float> filteredData = new ArrayList<>();
-        
+        System.out.println("Number of Peaks in initialData: "+countNumberOfPeaksDouble(initialData));
+        ArrayList<Double> filteredData = new ArrayList<>();
+        filteredData = bandPassFilter(initialData);
+        /*
         for(int i = 0; i < 3; i++){
             if(i == 0) filteredData = movingAverageFilterPass(initialData);
             else filteredData = movingAverageFilterPass(filteredData);
         }
-        /*
+
         for(int i = 0; i < 10; i++){
             if(i == 0) filteredData = vectorFilteringPass(initialData);
             else filteredData = vectorFilteringPass(filteredData);
             
         }*/
-        System.out.println("Number of peaks after filtering: "+countNumberOfPeaks(filteredData));
-        //filteredData.forEach((data)->System.out.println(data));
+        System.out.println("Number of peaks after filtering: "+countNumberOfPeaksDouble(filteredData));
+        filteredData.forEach((data)->System.out.println(data));
         //initialData.forEach((data)->System.out.println(data));
 
 
@@ -88,21 +89,53 @@ public class PulseCounter{
         return outArray;
     }
 
-    private static ArrayList<Float> bandPassFilter(ArrayList<Float> data){
-        ArrayList<Float> filteredData = new ArrayList<>();
-        int order = 6;
-        double sampleRate = 10;
-        double frequencyCutoff = 10;
-        Butterworth butterworth = new Butterworth();
-        butterworth.bandPass(order, sampleRate, frequencyCutoff, frequencyCutoff/4);
-        for(int i = 0; i < data.size(); i++){
-            filteredData.put(i,butterworth.filter(data.get(i)));
+    private static ArrayList<Double> bandPassFilter(ArrayList<Double> data){
+        ArrayList<Double> outData = new ArrayList<>();
+        double[] inData = new double[data.size()];
+        for(int i = 0; i < data.size();i++){
+            inData[i] = data.get(i);
         }
-        return filteredData;
+        int order = 3;
+        double sampleRate = 500;
+        double lowCut = 500;
+        double highCut = 800;
+        Butterworth butterworth = new Butterworth(inData,sampleRate);
+        double[] filteredData = butterworth.bandPassFilter(order, lowCut,highCut);
+        for(int i = 0; i < data.size(); i++){
+            outData.add(i,filteredData[i]);
+        }
+        return outData;
     }
 
     private static int countNumberOfPeaks(ArrayList<Float> data){
         int average = calculateAverage(data);
+        System.out.println("Average: "+average);
+        int offset = 0;
+        int peaks = 0;
+        for(int i = 0; i < data.size();i++){
+            if (data.get(i) > average + offset){
+            if(i == 0){
+                if(data.get(i) > data.get(i+1)){
+                    peaks++;
+                }
+            }else if (i == data.size()-1){
+                if(data.get(i) > data.get(i-1)){
+                    peaks++;
+                }
+            }
+            else{
+                if(data.get(i) > data.get(i-1) && data.get(i) > data.get(i+1)){
+                    peaks++;
+                }
+            }
+            }
+            //if(data.get(i) >= average+offset) peaks++;
+        }
+        return peaks;
+
+    }
+    private static int countNumberOfPeaksDouble(ArrayList<Double> data){
+        int average = calculateAverageDouble(data);
         System.out.println("Average: "+average);
         int offset = 0;
         int peaks = 0;
@@ -138,6 +171,15 @@ public class PulseCounter{
         }
         return sum/number;
     }
+    private static int calculateAverageDouble(ArrayList<Double> data){
+        int sum = 0;
+        int number = 0;
+        for(int i = 0; i < data.size();i++){
+            sum += data.get(i);
+            number++;
+        }
+        return sum/number;
+    }
 
     private static Float sum(Float i1, Float i2, Float i3){
         return (i1 + i2 + i3)/3;
@@ -148,7 +190,7 @@ public class PulseCounter{
         while (sc.hasNextLine()){
             String line = sc.nextLine();
             try {
-                initialData.add(Float.parseFloat(line));
+                initialData.add(Double.parseDouble(line));
             } catch (NumberFormatException e){
                 System.out.println("Bad Input: Data file should only include numbers");
                 System.exit(0);
