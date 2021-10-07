@@ -103,7 +103,7 @@ public class PulseCounter{
         double sampleRate = 10;
         double nyq = sampleRate/2;
         double lowCut = 1.2;
-        double highCut = 2.5;
+        double highCut = 2.25;
         Butterworth butterworth = new Butterworth(inData,sampleRate);
         double[] filteredData = butterworth.bandPassFilter(order, lowCut,highCut);
         for(int i = 0; i < data.size(); i++){
